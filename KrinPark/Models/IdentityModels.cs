@@ -20,6 +20,12 @@ namespace KrinPark.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<ParkingLot> ParkingLots { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<ParkingRate> ParkingRates { get; set; }
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

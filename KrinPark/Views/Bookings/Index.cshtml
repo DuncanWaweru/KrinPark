@@ -1,0 +1,63 @@
+﻿@model IEnumerable<KrinPark.Models.ParkingLot>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="alert alert-primary">
+    Available Slots as per the selected Dates.
+</div>
+@using (Html.BeginForm("GetAvailableSlots","Bookings"))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+    <div class="form-group">
+        @Html.Label("Check in", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.Editor("CheckIn", new { htmlAttributes = new { @class = "form-control", @type = "date-time" } })
+            @Html.ValidationMessage("CheckIn", "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.Label("Check Out", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.Editor("CheckOut", new { htmlAttributes = new { @class = "form-control", @type = "date-time" } })
+            @Html.ValidationMessage("CheckOut", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Search Slots" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+<div class="alert alert-primary">
+    Available Slots as per the selected Dates.
+</div>
+
+<div class="card-columns">
+    @foreach (var item in Model)
+    {
+        using (Html.BeginForm("BookSlots", "Bookings",new {slotId= item.ParkingLotSerialNo }))
+        {
+            <div class="form-horizontal">
+
+                <div class="card bg-primary">
+                    <div class="card-body text-center">
+
+                        <p class="card-text"> @Html.DisplayFor(modelItem => item.ParkingLotSerialNo)</p>
+                        <br />
+                        <input type="submit" value="Book" class="btn btn-success" />
+                    </div>
+                </div>
+             </div>
+        }
+    }
+  </div>

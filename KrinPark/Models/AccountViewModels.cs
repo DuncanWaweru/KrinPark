@@ -6,7 +6,7 @@ namespace KrinPark.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string Email { get; set; }
     }
 
@@ -42,7 +42,7 @@ namespace KrinPark.Models
     public class ForgotViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string Email { get; set; }
     }
 
@@ -66,7 +66,7 @@ namespace KrinPark.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string Email { get; set; }
         [Required]
         [Display(Name = "UserName")]
@@ -91,7 +91,7 @@ namespace KrinPark.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string Email { get; set; }
 
         [Required]
@@ -112,7 +112,7 @@ namespace KrinPark.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "UserName")]
         public string Email { get; set; }
     }
 }
