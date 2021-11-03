@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using KrinPark.Models;
+using Microsoft.AspNet.Identity;
 
 namespace KrinPark.Controllers
 {
@@ -16,11 +17,19 @@ namespace KrinPark.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Vehicles
-        [Authorize(Roles ="Admin")]
+      //  [Authorize(Roles ="Admin")]
         public ActionResult Index()
         {
-            var vehicles = db.Vehicles.Include(v => v.Driver);
-            return View(vehicles.ToList());
+            if (User.IsInRole("Admin"))
+            {
+                var vehicles = db.Vehicles.Include(v => v.Driver);
+                return View(vehicles.ToList());
+            }
+            else
+            {
+                return MyVehicles();
+            }
+           
         }
 
         public ActionResult MyVehicles()
@@ -49,7 +58,6 @@ namespace KrinPark.Controllers
         // GET: Vehicles/Create
         public ActionResult Create()
         {
-            ViewBag.DriverId = new SelectList(db.Drivers, "DriverId", "Name");
             return View();
         }
 
@@ -58,17 +66,23 @@ namespace KrinPark.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "VehicleId,DriverId,RegNo,CreatedOn,UpdatedOn,CreatedBy,UpdatedBy")] Vehicle vehicle)
+        public ActionResult Create([Bind(Include = "RegNo")] Vehicle vehicle)
         {
+            
             if (ModelState.IsValid)
             {
+                var userID = User.Identity.GetUserId();
+                vehicle.DriverId = db.Drivers.Where(x => x.ApplicationUserId == userID).FirstOrDefault().DriverId;
                 vehicle.VehicleId = Guid.NewGuid();
+                vehicle.CreatedBy = User.Identity.Name;
+                vehicle.CreatedOn = DateTime.Now;
+                vehicle.UpdatedBy = User.Identity.Name;
+                vehicle.UpdatedOn = DateTime.Now;
                 db.Vehicles.Add(vehicle);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DriverId = new SelectList(db.Drivers, "DriverId", "Name", vehicle.DriverId);
             return View(vehicle);
         }
 

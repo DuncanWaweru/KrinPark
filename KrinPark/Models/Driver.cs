@@ -15,6 +15,7 @@ namespace KrinPark.Models
         public string Email { get; set; }
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
+        public string ApplicationUserId { get; set; }
         [DataType(DataType.Password)]
         public virtual string Password { get; set; }
 

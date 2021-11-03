@@ -7,6 +7,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using KrinPark.Models;
+using KrinPark.Repo;
+using Microsoft.AspNet.Identity;
 
 namespace KrinPark.Controllers
 {
@@ -16,21 +18,61 @@ namespace KrinPark.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Bookings
-        public ActionResult Index()
+        [HttpGet]
+        public ActionResult Index(string vehicleId,string plateNo)
         {
-            var bookings = db.Bookings.Include(b => b.Vehicle);
-            return View(bookings.ToList());
+            ViewData["vehicleId"] = vehicleId;
+            ViewData["plateNo"] = plateNo;
+            //  var bookings = db.Bookings.Include(b => b.Vehicle);
+         return   GetAvailableSlots(DateTime.Now.AddHours(1), DateTime.Now.AddHours(3),vehicleId);
         }
         [HttpPost]
-        public ActionResult BookSlots(string slotId)
+        public ActionResult BookSlots(string slotId,string vehicleId, DateTime checkIn, DateTime checkOut)
         {
+            var hours = checkOut - checkIn;
+            var totalHours = Math.Ceiling(hours.TotalMinutes/60);
+            Create(new Booking() {
+
+                CheckIn = checkIn,
+                CheckOut = checkOut,
+                ParkingFee = (decimal) totalHours * 1, //TODO: to set another figure this is for purposes of mpesa testing.
+                CreatedBy = User.Identity.Name,
+                CreatedOn = DateTime.Now,
+                IsCancelled = false,
+                ParkingLotId = Guid.Parse(slotId),
+                UpdatedBy = User.Identity.Name,
+                UpdatedOn = DateTime.Now,
+                VehicleId = Guid.Parse(vehicleId)
+
+            }); ;
+
             //var parkinglot
             return View();
         }
 
         [HttpPost]
-        public ActionResult GetAvailableSlots(DateTime checkIn, DateTime checkOut)
+        public ActionResult PayParkingFee(string bookingId,decimal amount)
         {
+            var userName = User.Identity.GetUserId();
+            var user = db.Users.Where(x=>x.Id== userName).SingleOrDefault();
+            ///TODO show stk Push requesting payment;
+            SafApiClass safApiClass = new SafApiClass();
+            safApiClass.PhoneNumber = user.PhoneNumber;
+            safApiClass.Amount = (int)amount;
+            safApiClass.AccountNo = bookingId;
+            safApiClass.MpesaStkPush();
+
+           
+            return RedirectToAction("GetMyBookings");
+        }
+
+
+        [HttpPost]
+        public ActionResult GetAvailableSlots(DateTime checkIn, DateTime checkOut,string vehicleId)
+        {
+            ViewData["checkIn"] = checkIn;
+            ViewData["checkOut"] = checkOut;
+            ViewData["vehicleId"] = vehicleId;
             //create logic to fetch available slots
             //bookings where checkin not between mycheck in and mycheckout  && checkout not between  mycheck in and mycheckout 
             var bookings = db.Bookings.Include(x=>x.ParkingLot).Where(x=>(x.CheckIn>=checkIn|| x.CheckIn<=checkOut)&&(x.CheckOut>=checkIn|| x.CheckOut<=checkOut)).Select(x=>x.ParkingLot);
@@ -41,8 +83,16 @@ namespace KrinPark.Controllers
             return View("Index",availableLots.ToList());
         }
 
+        [HttpGet]
+        public ActionResult GetMyBookings()
+        {
+            var userName = User.Identity.Name;
+           
+            return View(db.Bookings.Include(x=>x.ParkingLot).Where(x => x.CreatedBy == userName).ToList());
+        }
 
-        // GET: Bookings/Details/5
+        // GET: Bookings/Details/5A specified Include path is not valid. The EntityType 'KrinPark.Models.Booking' does not declare a navigation property with the name 'Payments'.'
+
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -60,7 +110,7 @@ namespace KrinPark.Controllers
         // GET: Bookings/Create
         public ActionResult Create()
         {
-            ViewBag.VehicleId = new SelectList(db.Vehicles, "VehicleId", "RegNo");
+           // ViewBag.VehicleId = new SelectList(db.Vehicles, "VehicleId", "RegNo");
             return View();
         }
 
@@ -69,18 +119,18 @@ namespace KrinPark.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "BookingId,VehicleId,CheckIn,CheckOut,IsCancelled,CreatedOn,UpdatedOn,CreatedBy,UpdatedBy")] Booking booking)
+        public ActionResult Create([Bind(Include = "BookingId,VehicleId,CheckIn,CheckOut,ParkingLotId,IsCancelled,CreatedOn,UpdatedOn,CreatedBy,UpdatedBy")] Booking booking)
         {
             if (ModelState.IsValid)
             {
                 booking.BookingId = Guid.NewGuid();
                 db.Bookings.Add(booking);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
             }
 
-            ViewBag.VehicleId = new SelectList(db.Vehicles, "VehicleId", "RegNo", booking.VehicleId);
-            return View(booking);
+            //ViewBag.VehicleId = new SelectList(db.Vehicles, "VehicleId", "RegNo", booking.VehicleId);
+            return GetMyBookings();
         }
 
         // GET: Bookings/Edit/5

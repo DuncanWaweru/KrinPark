@@ -15,6 +15,7 @@ namespace KrinPark.Models
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public bool IsCancelled { get; set; }
-        public virtual IEnumerable<Payment> Payments { get; set; } = new List<Payment>();
+        public decimal ParkingFee { get; set; }
+        public  IEnumerable<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<KrinPark.Models.Vehicle>
+
+@{
+    ViewBag.Title = "View";
+}
+
+<h2>View</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Driver.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegNo)
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Driver.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegNo)
+        </td>
+        <td>
+            <a href="/Bookings/Index?vehicleId=@item.VehicleId&plateNo=@item.RegNo" class="btn btn-primary ">Book</a>
+        </td>
+        <td>
+
+            @Html.ActionLink("Edit", "Edit", new { id=item.VehicleId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.VehicleId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.VehicleId })
+        </td>
+    </tr>
+}
+
+</table>

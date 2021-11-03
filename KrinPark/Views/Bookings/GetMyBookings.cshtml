@@ -1,0 +1,104 @@
+﻿@model IEnumerable<KrinPark.Models.Booking>
+@using KrinPark.Models;
+@{
+    ViewBag.Title = "GetMyBookings";
+    string getClass(Booking booking){
+        if (booking.CheckIn < DateTime.Now && booking.CheckOut < DateTime.Now)
+        {
+            return "bg-light";
+        }
+        else if(booking.CheckIn>DateTime.Now)
+        {
+            return "bg-success";
+        }
+        else if(booking.CheckIn < DateTime.Now && booking.CheckOut > DateTime.Now)
+            return "bg-warning";
+        return "bg-primary";
+    }
+}
+
+<h2>GetMyBookings</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ParkingLot.ParkingLotSerialNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Vehicle.RegNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckIn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckOut)
+        </th> 
+        <th>
+            @Html.DisplayNameFor(model => model.ParkingFee)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </th>
+        <th>
+            Payments
+        </th>
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+
+
+<tr class="@getClass(item)">
+
+    <td>
+        @Html.DisplayFor(modelItem => item.ParkingLot.ParkingLotSerialNo)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Vehicle.RegNo)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.CheckIn)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.CheckOut)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ParkingFee)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.CreatedOn)
+    </td>
+    <td>
+        @if (item.Payments.Sum(x => x.Amount) >= item.ParkingFee)
+        {
+            <span class="btn btn-success">Paid</span>
+        }
+        else
+        {
+            using (Html.BeginForm("PayParkingFee", "Bookings", new { bookingId = item.BookingId, amount = item.ParkingFee }, FormMethod.Post))
+            {
+
+
+                <div class="card-body text-center">
+                    <input type="submit" value="Pay" class="btn btn-primary" />
+                </div>
+
+            }
+        }
+
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.BookingId }) |
+        @Html.ActionLink("Details", "Details", new { id = item.BookingId }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.BookingId })
+    </td>
+</tr>
+}
+
+</table>
+

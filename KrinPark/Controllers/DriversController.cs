@@ -93,7 +93,7 @@ namespace KrinPark.Controllers
                 if (ModelState.IsValid)
                 {
                     //create system user who can login==> aspnetusers table
-                    var user = new ApplicationUser { UserName = driver.Name, Email = driver.Email, PhoneNumber = driver.Telephone };
+                    var user = new ApplicationUser { UserName = driver.Email, Email = driver.Email, PhoneNumber = driver.Telephone };
                     var result = await UserManager.CreateAsync(user, driver.Password);
                     if (result.Succeeded)
                     {
@@ -105,9 +105,13 @@ namespace KrinPark.Controllers
                     driver.UpdatedBy = User.Identity.Name;
                     driver.UpdatedOn = DateTime.Now;
                     driver.DriverId = Guid.NewGuid();
-                    driver.ApplicationUser = user;
+                    driver.ApplicationUserId = user.Id;
+                    driver.Password = "";
                     db.Drivers.Add(driver);
                     db.SaveChanges();
+
+                    //db.Entry(driver).State = EntityState.Modified;
+                    //db.SaveChanges();
                     return RedirectToAction("Index");
                     ///TODO: assign driver to drivers role.
 

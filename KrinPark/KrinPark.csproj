@@ -55,12 +55,21 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -167,6 +176,7 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BookingsController.cs" />
     <Compile Include="Controllers\DriversController.cs" />
@@ -175,8 +185,11 @@
     <Compile Include="Controllers\ParkingSlots.Controller.cs" />
     <Compile Include="Controllers\ParkingRatesController.cs" />
     <Compile Include="Controllers\ParkingSpotsController.cs" />
+    <Compile Include="Controllers\PaymentResponsesController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\RoleManagementController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Controllers\VehiclesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -205,6 +218,18 @@
     <Compile Include="Migrations\202109121246326_improvedtable.Designer.cs">
       <DependentUpon>202109121246326_improvedtable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202111011926459_updateDrivesTable.cs" />
+    <Compile Include="Migrations\202111011926459_updateDrivesTable.Designer.cs">
+      <DependentUpon>202111011926459_updateDrivesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202111021650211_addParkingfeeInBooking.cs" />
+    <Compile Include="Migrations\202111021650211_addParkingfeeInBooking.Designer.cs">
+      <DependentUpon>202111021650211_addParkingfeeInBooking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202111021952313_addPaymentResponse.cs" />
+    <Compile Include="Migrations\202111021952313_addPaymentResponse.Designer.cs">
+      <DependentUpon>202111021952313_addPaymentResponse.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AuditTrail.cs" />
@@ -216,8 +241,12 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ParkingRate.cs" />
     <Compile Include="Models\Payment.cs" />
+    <Compile Include="Models\PaymentResponse.cs" />
     <Compile Include="Models\Vehicle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\saf.cs" />
+    <Compile Include="Repo\SafApiClass.cs" />
+    <Compile Include="Repo\StkqueryApi.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +271,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Uploads\logs.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -288,11 +318,20 @@
     <Content Include="Views\Bookings\Index.cshtml" />
     <Content Include="Views\ParkingSpots\Create.cshtml" />
     <Content Include="Views\ParkingSpots\Index.cshtml" />
+    <Content Include="Views\Vehicles\Index.cshtml" />
+    <Content Include="Views\Vehicles\Create.cshtml" />
+    <Content Include="Views\Vehicles\Delete.cshtml" />
+    <Content Include="Views\Bookings\Create.cshtml" />
+    <Content Include="Views\Bookings\GetMyBookings.cshtml" />
+    <Content Include="Views\PaymentResponses\Create.cshtml" />
+    <Content Include="Views\PaymentResponses\Delete.cshtml" />
+    <Content Include="Views\PaymentResponses\Details.cshtml" />
+    <Content Include="Views\PaymentResponses\Edit.cshtml" />
+    <Content Include="Views\PaymentResponses\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Payments\" />
-    <Folder Include="Views\Vehicles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -325,6 +364,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202109121246326_improvedtable.resx">
       <DependentUpon>202109121246326_improvedtable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111011926459_updateDrivesTable.resx">
+      <DependentUpon>202111011926459_updateDrivesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111021650211_addParkingfeeInBooking.resx">
+      <DependentUpon>202111021650211_addParkingfeeInBooking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111021952313_addPaymentResponse.resx">
+      <DependentUpon>202111021952313_addPaymentResponse.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

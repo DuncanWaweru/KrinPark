@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - Krinpark Online Booking</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -27,6 +27,9 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Role  Management", "Index", "RoleManagement")</li>
+                        <li>@Html.ActionLink("Vehicles", "Index", "Vehicles")</li>
+                        <li>@Html.ActionLink("Bookings", "GetMyBookings", "Bookings")</li>
+                        <li>@Html.ActionLink("Payments", "Index", "PaymentResponses")</li>
 
                     }
                 </ul>
@@ -38,7 +41,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - Krinpark Online Booking Application</p>
         </footer>
     </div>
 
