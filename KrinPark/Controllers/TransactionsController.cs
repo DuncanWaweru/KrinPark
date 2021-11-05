@@ -37,7 +37,7 @@ namespace KrinPark.Controllers
                 _Payments.Paybill = "174379";
                 context.PaymentResponse.Add(_Payments);
                 context.SaveChanges();
-                context.Payments.Add(new Payment() { Amount = _Payments.Amount, BookingId = Guid.Parse(bookingId), CreatedBy = User.Identity.Name, UpdatedBy = User.Identity.Name, CreatedOn = DateTime.Now, UpdatedOn = DateTime.Now });
+                context.Payments.Add(new Payment() {PaymentId=Guid.NewGuid(), Amount = _Payments.Amount, BookingId = Guid.Parse(bookingId), CreatedBy = User.Identity.Name, UpdatedBy = User.Identity.Name, CreatedOn = DateTime.Now, UpdatedOn = DateTime.Now });
                 context.SaveChanges();
                 return Ok();
             }
@@ -46,7 +46,7 @@ namespace KrinPark.Controllers
                 var path = HttpContext.Current.Server.MapPath("/Uploads/logs.txt");
 
                 System.IO.File.WriteAllText(path, es.ToString());
-                return BadRequest();
+                return BadRequest(es.ToString());
             }
         }
     }
