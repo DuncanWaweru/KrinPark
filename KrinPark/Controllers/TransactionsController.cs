@@ -29,7 +29,7 @@ namespace KrinPark.Controllers
                 var _dataResponse = response.Body.stkCallback.CallbackMetadata.Item.ToList();
                 var context = new ApplicationDbContext();
                 PaymentResponse _Payments = new PaymentResponse();
-
+                _Payments.Id = Guid.NewGuid();
                 _Payments.Amount = Convert.ToInt32(_dataResponse[0].Value);
                 _Payments.AccountNo = _dataResponse[1].Value.ToString();
                 _Payments.CreatedOn = DateTime.Now;
@@ -38,7 +38,6 @@ namespace KrinPark.Controllers
                 context.PaymentResponse.Add(_Payments);
                 context.SaveChanges();
                 context.Payments.Add(new Payment() { Amount = _Payments.Amount, BookingId = Guid.Parse(bookingId), CreatedBy = User.Identity.Name, UpdatedBy = User.Identity.Name, CreatedOn = DateTime.Now, UpdatedOn = DateTime.Now });
-              //  db.SaveChanges();
                 context.SaveChanges();
                 return Ok();
             }
@@ -47,7 +46,7 @@ namespace KrinPark.Controllers
                 var path = HttpContext.Current.Server.MapPath("/Uploads/logs.txt");
 
                 System.IO.File.WriteAllText(path, es.ToString());
-                return Ok();
+                return BadRequest();
             }
         }
     }

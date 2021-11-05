@@ -31,7 +31,7 @@ namespace KrinPark.Controllers
         {
             var hours = checkOut - checkIn;
             var totalHours = Math.Ceiling(hours.TotalMinutes/60);
-            Create(new Booking() {
+           return Create(new Booking() {
 
                 CheckIn = checkIn,
                 CheckOut = checkOut,
@@ -47,7 +47,7 @@ namespace KrinPark.Controllers
             }); ;
 
             //var parkinglot
-            return View();
+          //  return View();
         }
 
         [HttpPost]

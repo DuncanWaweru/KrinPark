@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<KrinPark.Models.Booking>
 @using KrinPark.Models;
+@using KrinPark.Repo;
 @{
     ViewBag.Title = "GetMyBookings";
     string getClass(Booking booking){
@@ -74,23 +75,20 @@
         @Html.DisplayFor(modelItem => item.CreatedOn)
     </td>
     <td>
-        @if (item.Payments.Sum(x => x.Amount) >= item.ParkingFee)
-        {
-            <span class="btn btn-success">Paid</span>
-        }
-        else
-        {
-            using (Html.BeginForm("PayParkingFee", "Bookings", new { bookingId = item.BookingId, amount = item.ParkingFee }, FormMethod.Post))
+        @*@if (item.Payments.Sum(x => x.Amount) >= item.ParkingFee)*@
+            @if (CheckPayments.GetAmountPaid(item.BookingId)>= item.ParkingFee)
             {
-
-
-                <div class="card-body text-center">
-                    <input type="submit" value="Pay" class="btn btn-primary" />
-                </div>
-
+                <span class="btn btn-success">Paid</span>
             }
-        }
-
+            else
+            {
+                using (Html.BeginForm("PayParkingFee", "Bookings", new { bookingId = item.BookingId, amount = item.ParkingFee }, FormMethod.Post))
+                {
+                    <div class="card-body text-center">
+                        <input type="submit" value="Pay" class="btn btn-primary" />
+                    </div>
+                }
+            }
     </td>
     <td>
         @Html.ActionLink("Edit", "Edit", new { id = item.BookingId }) |

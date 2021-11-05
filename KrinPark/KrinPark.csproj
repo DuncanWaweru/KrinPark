@@ -244,6 +244,7 @@
     <Compile Include="Models\PaymentResponse.cs" />
     <Compile Include="Models\Vehicle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\CheckPayments.cs" />
     <Compile Include="Repo\saf.cs" />
     <Compile Include="Repo\SafApiClass.cs" />
     <Compile Include="Repo\StkqueryApi.cs" />
